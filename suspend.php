@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $htaccess = $basePath.'/.htaccess';
 
         if (file_exists($htaccess)) {
-            copy($htaccess, $basePath.'/.htaccess.bak');
+            copy($htaccess, sprintf('%s/.htaccess.bak.%s', $basePath, time()));
         }
 
         $data = "Require all denied\n";
