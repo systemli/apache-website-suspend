@@ -1,6 +1,8 @@
 <?php
 
-const PASS_PHRASE = '4F63B7C3-8DD2-40D8-BA95-8D23239353DB';
+if (!include_once 'suspend-config.php') {
+    die('could not load configuration');
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $success = false;
@@ -19,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $subject = sprintf('Website "%s" was suspended', $_SERVER['SERVER_NAME']);
         $message = sprintf('The website under "%s" was suspended', $_SERVER['SERVER_NAME']);
-        mail('admin@systemli.org', $subject, $message);
+        mail(MAIL_ADDR, $subject, $message);
 
         $success = true;
     }
