@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>EMERGENCY WEBSITE SHUTDOWN</title>
+    <title>WEBSITE SHUTDOWN</title>
     <style type="text/css">
         /*!
          * Milligram v1.3.0
@@ -259,7 +259,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="container">
     <div class="row">
         <div class="column-10">
-            <h1>EMERGENCY WEBSITE SUSPEND</h1>
+            <h1>WEBSITE SHUTDOWN</h1>
             <p><strong>Caution: After suspending your website you need to contact us to reactivate the website!</strong>
             </p>
             <?php if (false === $success) : ?>
