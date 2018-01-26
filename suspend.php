@@ -1,29 +1,64 @@
 <?php
 
-if (!include_once 'suspend-config.php') {
-    die('could not load configuration');
+/*
+ * Required Environment Variables:
+ *
+ * SUSPEND_PASSPHRASE
+ * SUSPEND_MAIL_ADDRESS
+ *
+ * We suggest to use a UUID or something strong like this for the passphrase.
+ *
+ */
+
+$success = true;
+
+/**
+ * Check if all required configuration values are present
+ *
+ * @return bool
+ */
+function checkRequirements()
+{
+    return empty(getenv('SUSPEND_PASSPHRASE')) || empty(getenv('SUSPEND_MAIL_ADDRESS'));
+}
+
+/**
+ * Backup existing .htaccess and write new one to web directory
+ *
+ * @return void
+ */
+function updateHtaccess()
+{
+    $basePath = realpath(dirname(__FILE__));
+    $htaccess = $basePath.'/.htaccess';
+
+    if (file_exists($htaccess)) {
+        copy($htaccess, sprintf('%s/.htaccess.bak.%s', $basePath, time()));
+    }
+
+    $data = "Require all denied\n";
+
+    file_put_contents($htaccess, $data);
+}
+
+/**
+ * Send information mail to administration contact
+ *
+ * @return void
+ */
+function sendInfo()
+{
+    $subject = sprintf('Website "%s" was suspended', $_SERVER['SERVER_NAME']);
+    $message = sprintf('The website under "%s" was suspended', $_SERVER['SERVER_NAME']);
+    mail(getenv('SUSPEND_MAIL_ADDRESS'), $subject, $message);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $success = false;
-
-    if (isset($_POST['passphrase']) && $_POST['passphrase'] == PASS_PHRASE) {
-        $basePath = realpath(dirname(__FILE__));
-        $htaccess = $basePath.'/.htaccess';
-
-        if (file_exists($htaccess)) {
-            copy($htaccess, sprintf('%s/.htaccess.bak.%s', $basePath, time()));
-        }
-
-        $data = "Require all denied\n";
-
-        file_put_contents($htaccess, $data);
-
-        $subject = sprintf('Website "%s" was suspended', $_SERVER['SERVER_NAME']);
-        $message = sprintf('The website under "%s" was suspended', $_SERVER['SERVER_NAME']);
-        mail(MAIL_ADDR, $subject, $message);
-
-        $success = true;
+    if (isset($_POST['passphrase']) && $_POST['passphrase'] === getenv('SUSPEND_PASSPHRASE')) {
+        updateHtaccess();
+        sendInfo();
+    } else {
+        $success = false;
     }
 }
 
@@ -61,8 +96,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .button, button, input[type='button'], input[type='reset'], input[type='submit'] {
-            background-color: #9b4dca;
-            border: 0.1rem solid #9b4dca;
+            background-color: #428bca;
+            border: 0.1rem solid #428bca;
             border-radius: .4rem;
             color: #fff;
             cursor: pointer;
@@ -92,13 +127,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .button[disabled]:focus, .button[disabled]:hover, button[disabled]:focus, button[disabled]:hover, input[type='button'][disabled]:focus, input[type='button'][disabled]:hover, input[type='reset'][disabled]:focus, input[type='reset'][disabled]:hover, input[type='submit'][disabled]:focus, input[type='submit'][disabled]:hover {
-            background-color: #9b4dca;
-            border-color: #9b4dca
+            background-color: #428bca;
+            border-color: #428bca
         }
 
         .button.button-outline, button.button-outline, input[type='button'].button-outline, input[type='reset'].button-outline, input[type='submit'].button-outline {
             background-color: transparent;
-            color: #9b4dca
+            color: #428bca
         }
 
         .button.button-outline:focus, .button.button-outline:hover, button.button-outline:focus, button.button-outline:hover, input[type='button'].button-outline:focus, input[type='button'].button-outline:hover, input[type='reset'].button-outline:focus, input[type='reset'].button-outline:hover, input[type='submit'].button-outline:focus, input[type='submit'].button-outline:hover {
@@ -109,13 +144,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .button.button-outline[disabled]:focus, .button.button-outline[disabled]:hover, button.button-outline[disabled]:focus, button.button-outline[disabled]:hover, input[type='button'].button-outline[disabled]:focus, input[type='button'].button-outline[disabled]:hover, input[type='reset'].button-outline[disabled]:focus, input[type='reset'].button-outline[disabled]:hover, input[type='submit'].button-outline[disabled]:focus, input[type='submit'].button-outline[disabled]:hover {
             border-color: inherit;
-            color: #9b4dca
+            color: #428bca
         }
 
         .button.button-clear, button.button-clear, input[type='button'].button-clear, input[type='reset'].button-clear, input[type='submit'].button-clear {
             background-color: transparent;
             border-color: transparent;
-            color: #9b4dca
+            color: #428bca
         }
 
         .button.button-clear:focus, .button.button-clear:hover, button.button-clear:focus, button.button-clear:hover, input[type='button'].button-clear:focus, input[type='button'].button-clear:hover, input[type='reset'].button-clear:focus, input[type='reset'].button-clear:hover, input[type='submit'].button-clear:focus, input[type='submit'].button-clear:hover {
@@ -125,7 +160,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .button.button-clear[disabled]:focus, .button.button-clear[disabled]:hover, button.button-clear[disabled]:focus, button.button-clear[disabled]:hover, input[type='button'].button-clear[disabled]:focus, input[type='button'].button-clear[disabled]:hover, input[type='reset'].button-clear[disabled]:focus, input[type='reset'].button-clear[disabled]:hover, input[type='submit'].button-clear[disabled]:focus, input[type='submit'].button-clear[disabled]:hover {
-            color: #9b4dca
+            color: #428bca
         }
 
         code {
@@ -139,7 +174,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         pre {
             background: #f4f5f6;
-            border-left: 0.3rem solid #9b4dca;
+            border-left: 0.3rem solid #428bca;
             overflow-y: hidden
         }
 
@@ -165,7 +200,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         input[type='email']:focus, input[type='number']:focus, input[type='password']:focus, input[type='search']:focus, input[type='tel']:focus, input[type='text']:focus, input[type='url']:focus, textarea:focus, select:focus {
-            border-color: #9b4dca;
+            border-color: #428bca;
             outline: 0
         }
 
@@ -214,7 +249,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         a {
-            color: #9b4dca;
+            color: #428bca;
             text-decoration: none
         }
 
@@ -259,19 +294,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="container">
     <div class="row">
         <div class="column-10">
-            <h1>WEBSITE SHUTDOWN</h1>
-            <p><strong>Caution: After suspending your website you need to contact us to reactivate the website!</strong>
-            </p>
-            <?php if (false === $success) : ?>
-                <p style="color: #9b4dca">The passphrase is wrong. Please try again or go away!</p>
+            <h1 style="text-transform: uppercase;">Website suspend form</h1>
+            <?php if (checkRequirements()) : ?>
+                <strong>The configuration is not valid! Please contact your hosting administrator!</strong>
+            <?php else : ?>
+                <p><strong>Caution: After suspending your website you need to contact us to reactivate the
+                        website!</strong>
+                </p>
+                <?php if (false === $success) : ?>
+                    <p style="color: #428bca">The passphrase is wrong. Please try again or go away!</p>
+                <?php endif; ?>
+                <form method="post">
+                    <fieldset>
+                        <label for="passphrase">Passphrase</label>
+                        <input type="password" name="passphrase" id="passphrase" required>
+                        <input class="button button-outline" type="submit" value="Yes, I will suspend this website!">
+                    </fieldset>
+                </form>
             <?php endif; ?>
-            <form method="post">
-                <fieldset>
-                    <label for="passphrase">Passphrase</label>
-                    <input type="password" name="passphrase" id="passphrase" required>
-                    <input class="button button-outline" type="submit" value="Yes, I will suspend this website!">
-                </fieldset>
-            </form>
         </div>
     </div>
 </div>

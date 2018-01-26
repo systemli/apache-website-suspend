@@ -1,4 +1,0 @@
-<?php
-
-const PASS_PHRASE = '4F63B7C3-8DD2-40D8-BA95-8D23239353DB';
-const MAIL_ADDR = 'admin@systemli.org';
