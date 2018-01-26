@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>WEBSITE SHUTDOWN</title>
+    <title>WEBSITE SUSPENSION</title>
     <style type="text/css">
         /*!
          * Milligram v1.3.0
@@ -294,12 +294,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="container">
     <div class="row">
         <div class="column-10">
-            <h1 style="text-transform: uppercase;">Website suspend form</h1>
+            <h1 style="text-transform: uppercase;">Website suspension form</h1>
             <?php if (checkRequirements()) : ?>
                 <strong>The configuration is not valid! Please contact your hosting administrator!</strong>
             <?php else : ?>
-                <p><strong>Caution: After suspending your website you need to contact us to reactivate the
-                        website!</strong>
+                <p><strong>By entering your passphrase, you can stop all accesses to this site. <br />
+                    Caution: You'll need to contact us via mail to reactivate the website!</strong>
                 </p>
                 <?php if (false === $success) : ?>
                     <p style="color: #428bca">The passphrase is wrong. Please try again or go away!</p>
@@ -308,7 +308,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <fieldset>
                         <label for="passphrase">Passphrase</label>
                         <input type="password" name="passphrase" id="passphrase" required>
-                        <input class="button button-outline" type="submit" value="Yes, I will suspend this website!">
+                        <input class="button button-outline" type="submit" value="Yes, I want to suspend this website!">
                     </fieldset>
                 </form>
             <?php endif; ?>
