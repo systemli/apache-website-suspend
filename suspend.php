@@ -29,7 +29,7 @@ function checkRequirements()
  */
 function updateHtaccess()
 {
-    $basePath = isset($_SERVER['DOCUMENT_ROOT']) ? isset($_SERVER['DOCUMENT_ROOT']) : realpath(dirname(__FILE__));
+    $basePath = isset($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] : realpath(dirname(__FILE__));
     $htaccess = $basePath.'/.htaccess';
 
     if (file_exists($htaccess)) {
