@@ -11,6 +11,9 @@
  */
 
 $success = true;
+if (false === $type = getenv('SUSPEND_TYPE')) {
+    $type = "default";
+}
 
 /**
  * Check if all required configuration values are present
@@ -25,11 +28,17 @@ function checkRequirements()
 /**
  * Backup existing .htaccess and write new one to web directory
  *
+ * @param string $type
+ *
  * @return void
  */
-function updateHtaccess()
+function updateHtaccess(string $type)
 {
-    $basePath = isset($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] : realpath(dirname(__FILE__));
+    if ("suexec_subdir" === $type) {
+        $basePath = dirname($_SERVER['SCRIPT_FILENAME']);
+    } else {
+        $basePath = isset($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] : realpath(dirname(__FILE__));
+    }
     $htaccess = $basePath.'/.htaccess';
 
     if (file_exists($htaccess)) {
@@ -44,19 +53,26 @@ function updateHtaccess()
 /**
  * Send information mail to administration contact
  *
+ * @param string $type
+ *
  * @return void
  */
-function sendInfo()
+function sendInfo(string $type)
 {
-    $subject = sprintf('Website "%s" was suspended', $_SERVER['SERVER_NAME']);
-    $message = sprintf('The website under "%s" was suspended', $_SERVER['SERVER_NAME']);
+    if ("suexec_subdir" === $type) {
+        $siteName = sprintf('%s%s', $_SERVER['SERVER_NAME'], dirname($_SERVER['REQUEST_URI']));
+    } else {
+        $siteName = $_SERVER['SERVER_NAME'];
+    }
+    $subject = sprintf('Website "%s" was suspended', $siteName);
+    $message = sprintf('The website under "%s" was suspended', $siteName);
     mail(getenv('SUSPEND_MAIL_ADDRESS'), $subject, $message);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['passphrase']) && $_POST['passphrase'] === getenv('SUSPEND_PASSPHRASE')) {
-        updateHtaccess();
-        sendInfo();
+        updateHtaccess($type);
+        sendInfo($type);
     } else {
         $success = false;
     }
